@@ -130,7 +130,7 @@ function EnvironmentEditor({
               ))}
               {variables.length === 0 && (
                 <div className="text-center py-6 text-xs text-muted-foreground">
-                  No variables yet. Click "Add Variable" to create one.
+                  No variables yet. Click &quot;Add Variable&quot; to create one.
                 </div>
               )}
             </div>

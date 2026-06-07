@@ -234,7 +234,6 @@ export function runScript(
   };
 
   try {
-    // eslint-disable-next-line no-new-func
     const fn = new Function("zapi", "console", code);
     fn(zapiObj, captureConsole);
     return null;

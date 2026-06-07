@@ -383,7 +383,6 @@ export function RunnerPanel() {
       setPendingRerun(false);
       handleRun();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingRerun]);
 
   return (
