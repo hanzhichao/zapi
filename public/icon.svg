@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="220" fill="#0f172a"/>
+
+  <!-- Outer glow layer -->
+  <defs>
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="18" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Lightning bolt / Z shape -->
+  <path
+    d="M580 110 L260 530 H440 L444 540 L340 914 L764 494 H584 L760 110 Z"
+    fill="url(#boltGrad)"
+    filter="url(#glow)"
+  />
+</svg>

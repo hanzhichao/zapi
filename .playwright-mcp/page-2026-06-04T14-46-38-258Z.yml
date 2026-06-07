@@ -1,0 +1,74 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - img [ref=e5]
+      - button [ref=e7]:
+        - img
+      - button [ref=e8]:
+        - img
+      - button [ref=e9]:
+        - img
+      - button [ref=e10]:
+        - img
+      - button [ref=e11]:
+        - img
+    - generic [ref=e12]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - generic [ref=e18]: Collections
+          - button [ref=e19]:
+            - img
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - generic [ref=e25] [cursor=pointer]:
+              - button [ref=e26]:
+                - img [ref=e27]
+              - generic [ref=e29]: Sample API Collection
+              - generic [ref=e30]:
+                - button "Add Request" [ref=e31]:
+                  - img
+                - button [ref=e32]:
+                  - img
+            - generic [ref=e34] [cursor=pointer]:
+              - generic [ref=e35]: GET
+              - generic [ref=e36]: Get Users
+              - button [ref=e37]:
+                - img
+          - generic [ref=e38]:
+            - generic [ref=e39] [cursor=pointer]:
+              - button [ref=e40]:
+                - img [ref=e41]
+              - generic [ref=e43]: stusdt
+              - generic [ref=e44]:
+                - button "Add Request" [ref=e45]:
+                  - img
+                - button [ref=e46]:
+                  - img
+            - generic [ref=e47]:
+              - generic [ref=e48] [cursor=pointer]:
+                - generic [ref=e49]: GET
+                - generic [ref=e50]: stUSDT Dashboard
+                - button [ref=e51]:
+                  - img
+              - generic [ref=e52] [cursor=pointer]:
+                - generic [ref=e53]: GET
+                - generic [ref=e54]: stUSDT Ethereum Dashboard
+                - button [ref=e55]:
+                  - img
+              - generic [ref=e56] [cursor=pointer]:
+                - generic [ref=e57]: GET
+                - generic [ref=e58]: Address Overview
+                - button [ref=e59]:
+                  - img
+      - separator [ref=e60]:
+        - img [ref=e62]
+      - generic [ref=e71]:
+        - generic [ref=e76]:
+          - generic [ref=e77]: ⚡
+          - paragraph [ref=e78]: Select or create a request to get started
+        - separator [ref=e79]:
+          - img [ref=e81]
+        - paragraph [ref=e91]: Hit Send to get a response
+  - alert [ref=e92]
+  - button "Open Next.js Dev Tools" [ref=e98] [cursor=pointer]:
+    - img [ref=e99]

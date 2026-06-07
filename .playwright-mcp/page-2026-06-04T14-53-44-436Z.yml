@@ -1,0 +1,94 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - img [ref=e5]
+      - button [ref=e7]:
+        - img
+      - button [ref=e8]:
+        - img
+      - button [ref=e9]:
+        - img
+      - button [ref=e10]:
+        - img
+      - button [ref=e11]:
+        - img
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]: Collections
+        - button [ref=e16]:
+          - img
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22] [cursor=pointer]:
+            - button [ref=e23]:
+              - img [ref=e24]
+            - generic [ref=e26]: Sample API Collection
+            - generic [ref=e27]:
+              - button "Add Request" [ref=e28]:
+                - img
+              - button [ref=e29]:
+                - img
+          - generic [ref=e31] [cursor=pointer]:
+            - generic [ref=e32]: GET
+            - generic [ref=e33]: Get Users
+            - button [ref=e34]:
+              - img
+        - generic [ref=e35]:
+          - generic [ref=e36] [cursor=pointer]:
+            - button [ref=e37]:
+              - img [ref=e38]
+            - generic [ref=e40]: stusdt
+            - generic [ref=e41]:
+              - button "Add Request" [ref=e42]:
+                - img
+              - button [ref=e43]:
+                - img
+          - generic [ref=e44]:
+            - generic [ref=e45] [cursor=pointer]:
+              - generic [ref=e46]: GET
+              - generic [ref=e47]: stUSDT Dashboard
+              - button [ref=e48]:
+                - img
+            - generic [ref=e49] [cursor=pointer]:
+              - generic [ref=e50]: GET
+              - generic [ref=e51]: stUSDT Ethereum Dashboard
+              - button [ref=e52]:
+                - img
+            - generic [ref=e53] [cursor=pointer]:
+              - generic [ref=e54]: GET
+              - generic [ref=e55]: Address Overview
+              - button [ref=e56]:
+                - img
+    - img [ref=e59]
+    - generic [ref=e66]:
+      - generic [ref=e67]:
+        - generic [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: GET
+          - generic [ref=e97]: stUSDT Dashboard
+          - button [ref=e98]:
+            - img [ref=e99]
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - combobox [ref=e102]:
+              - generic: GET
+              - img [ref=e103]
+            - textbox "Enter URL or paste text" [ref=e105]: "{{stusdt}}/stusdt/dashboard"
+            - button "Send" [ref=e106]:
+              - img
+              - text: Send
+          - generic [ref=e108]:
+            - tablist [ref=e110]:
+              - tab "Params" [selected] [ref=e111]
+              - tab "Headers" [ref=e112]
+              - tab "Body" [ref=e113]
+              - tab "Auth" [ref=e114]
+              - tab "Docs" [ref=e115]
+            - tabpanel "Params" [ref=e117]:
+              - button "Add" [ref=e119]:
+                - img
+                - text: Add
+      - img [ref=e74]
+      - paragraph [ref=e83]: Hit Send to get a response
+  - alert [ref=e84]
+  - button "Open Next.js Dev Tools" [ref=e90] [cursor=pointer]:
+    - img [ref=e91]

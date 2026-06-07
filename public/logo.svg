@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 120" width="480" height="120">
+  <defs>
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon background -->
+  <rect x="4" y="4" width="112" height="112" rx="24" fill="#0f172a"/>
+
+  <!-- Lightning bolt -->
+  <path
+    d="M71 18 L37 62 H54 L50 102 L88 58 H72 L90 18 Z"
+    fill="url(#boltGrad)"
+  />
+
+  <!-- ZApi wordmark -->
+  <text
+    x="138"
+    y="74"
+    font-family="'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif"
+    font-size="54"
+    font-weight="800"
+    letter-spacing="-2"
+    fill="#0f172a"
+  >ZApi</text>
+
+  <!-- Tagline -->
+  <text
+    x="140"
+    y="96"
+    font-family="'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif"
+    font-size="15"
+    font-weight="400"
+    letter-spacing="0.5"
+    fill="#64748b"
+  >Fast. Modern. API Client.</text>
+</svg>

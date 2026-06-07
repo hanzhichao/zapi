@@ -1,0 +1,69 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - img [ref=e5]
+      - button [ref=e7]:
+        - img
+      - button [ref=e8]:
+        - img
+      - button [ref=e9]:
+        - img
+      - button [ref=e10]:
+        - img
+      - button [ref=e11]:
+        - img
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]: Collections
+        - button [ref=e16]:
+          - img
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22] [cursor=pointer]:
+            - button [ref=e23]:
+              - img [ref=e24]
+            - generic [ref=e26]: Sample API Collection
+            - generic [ref=e27]:
+              - button "Add Request" [ref=e28]:
+                - img
+              - button [ref=e29]:
+                - img
+          - generic [ref=e31] [cursor=pointer]:
+            - generic [ref=e32]: GET
+            - generic [ref=e33]: Get Users
+            - button [ref=e34]:
+              - img
+        - generic [ref=e35]:
+          - generic [ref=e36] [cursor=pointer]:
+            - button [ref=e37]:
+              - img [ref=e38]
+            - generic [ref=e40]: stusdt
+            - generic [ref=e41]:
+              - button "Add Request" [ref=e42]:
+                - img
+              - button [ref=e43]:
+                - img
+          - generic [ref=e44]:
+            - generic [ref=e45] [cursor=pointer]:
+              - generic [ref=e46]: GET
+              - generic [ref=e47]: stUSDT Dashboard
+              - button [ref=e48]:
+                - img
+            - generic [ref=e49] [cursor=pointer]:
+              - generic [ref=e50]: GET
+              - generic [ref=e51]: stUSDT Ethereum Dashboard
+              - button [ref=e52]:
+                - img
+            - generic [ref=e53] [cursor=pointer]:
+              - generic [ref=e54]: GET
+              - generic [ref=e55]: Address Overview
+              - button [ref=e56]:
+                - img
+    - img [ref=e59]
+    - generic [ref=e66]:
+      - generic [ref=e69]:
+        - generic [ref=e70]: ⚡
+        - paragraph [ref=e71]: Select or create a request to get started
+      - img [ref=e74]
+      - paragraph [ref=e83]: Hit Send to get a response
+  - alert [ref=e84]
