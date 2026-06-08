@@ -1,9 +1,11 @@
 use std::collections::HashMap;
+use std::fs;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
-use tauri::Emitter;
+use tauri::{AppHandle, Emitter, Manager};
 
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
@@ -393,12 +395,200 @@ async fn run_performance_test(
   })
 }
 
+// ── Hosts Manager ────────────────────────────────────────────────────────────
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct HostsProfile {
+  pub id: String,
+  pub name: String,
+  pub content: String,
+  pub created_at: u64,
+}
+
+fn hosts_file_path() -> PathBuf {
+  #[cfg(target_os = "windows")]
+  return PathBuf::from("C:\\Windows\\System32\\drivers\\etc\\hosts");
+  #[cfg(not(target_os = "windows"))]
+  PathBuf::from("/etc/hosts")
+}
+
+fn backup_path(app: &AppHandle) -> Result<PathBuf, String> {
+  let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+  fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+  Ok(dir.join("hosts.backup"))
+}
+
+fn profiles_dir(app: &AppHandle) -> Result<PathBuf, String> {
+  let dir = app.path().app_data_dir().map_err(|e| e.to_string())?.join("hosts_profiles");
+  fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+  Ok(dir)
+}
+
+fn write_hosts_elevated(src: &str, dst: &str) -> Result<(), String> {
+  #[cfg(target_os = "macos")]
+  {
+    let script = format!(
+      "do shell script \"cp '{}' '{}'\" with administrator privileges",
+      src.replace('\'', "'\\''"),
+      dst.replace('\'', "'\\''")
+    );
+    let output = std::process::Command::new("osascript")
+      .arg("-e")
+      .arg(&script)
+      .output()
+      .map_err(|e| e.to_string())?;
+
+    if !output.status.success() {
+      let stderr = String::from_utf8_lossy(&output.stderr);
+      return Err(if stderr.contains("-128") || stderr.contains("cancel") {
+        "Authorization cancelled by user".to_string()
+      } else {
+        format!("Failed to write hosts: {}", stderr.trim())
+      });
+    }
+    Ok(())
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    let output = std::process::Command::new("pkexec")
+      .args(["cp", src, dst])
+      .output()
+      .map_err(|e| e.to_string())?;
+    if !output.status.success() {
+      return Err(String::from_utf8_lossy(&output.stderr).to_string());
+    }
+    Ok(())
+  }
+
+  #[cfg(target_os = "windows")]
+  {
+    fs::copy(src, dst).map(|_| ()).map_err(|e| format!("Failed to write hosts (run as administrator): {}", e))
+  }
+}
+
+#[tauri::command]
+fn hosts_get_content() -> Result<String, String> {
+  fs::read_to_string(hosts_file_path()).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn hosts_apply(app: AppHandle, content: String) -> Result<(), String> {
+  let current = fs::read_to_string(hosts_file_path()).map_err(|e| e.to_string())?;
+  let bp = backup_path(&app)?;
+  // Only backup if no backup exists yet (preserve original system hosts)
+  if !bp.exists() {
+    fs::write(&bp, &current).map_err(|e| e.to_string())?;
+  }
+
+  let tmp = std::env::temp_dir().join("zapi_hosts_apply.tmp");
+  fs::write(&tmp, &content).map_err(|e| e.to_string())?;
+  let result = write_hosts_elevated(&tmp.to_string_lossy(), &hosts_file_path().to_string_lossy());
+  let _ = fs::remove_file(&tmp);
+  result
+}
+
+#[tauri::command]
+fn hosts_restore(app: AppHandle) -> Result<(), String> {
+  let bp = backup_path(&app)?;
+  if !bp.exists() {
+    return Err("No backup found".to_string());
+  }
+  let content = fs::read_to_string(&bp).map_err(|e| e.to_string())?;
+  let tmp = std::env::temp_dir().join("zapi_hosts_restore.tmp");
+  fs::write(&tmp, &content).map_err(|e| e.to_string())?;
+  let result = write_hosts_elevated(&tmp.to_string_lossy(), &hosts_file_path().to_string_lossy());
+  let _ = fs::remove_file(&tmp);
+  if result.is_ok() {
+    // Remove backup after successful restore
+    let _ = fs::remove_file(&bp);
+  }
+  result
+}
+
+#[tauri::command]
+fn hosts_get_backup(app: AppHandle) -> Result<Option<String>, String> {
+  let bp = backup_path(&app)?;
+  if bp.exists() {
+    Ok(Some(fs::read_to_string(bp).map_err(|e| e.to_string())?))
+  } else {
+    Ok(None)
+  }
+}
+
+#[tauri::command]
+fn hosts_list_profiles(app: AppHandle) -> Result<Vec<HostsProfile>, String> {
+  let dir = profiles_dir(&app)?;
+  let mut profiles: Vec<HostsProfile> = Vec::new();
+  if let Ok(entries) = fs::read_dir(&dir) {
+    for entry in entries.flatten() {
+      let path = entry.path();
+      if path.extension().and_then(|e| e.to_str()) == Some("json") {
+        if let Ok(data) = fs::read_to_string(&path) {
+          if let Ok(p) = serde_json::from_str::<HostsProfile>(&data) {
+            profiles.push(p);
+          }
+        }
+      }
+    }
+  }
+  profiles.sort_by_key(|p| p.created_at);
+  Ok(profiles)
+}
+
+#[tauri::command]
+fn hosts_save_profile(app: AppHandle, id: String, name: String, content: String) -> Result<(), String> {
+  let dir = profiles_dir(&app)?;
+  // Read existing to preserve created_at if editing
+  let existing_created_at = {
+    let path = dir.join(format!("{}.json", id));
+    if path.exists() {
+      fs::read_to_string(&path)
+        .ok()
+        .and_then(|s| serde_json::from_str::<HostsProfile>(&s).ok())
+        .map(|p| p.created_at)
+    } else {
+      None
+    }
+  };
+  let created_at = existing_created_at.unwrap_or_else(|| {
+    std::time::SystemTime::now()
+      .duration_since(std::time::UNIX_EPOCH)
+      .unwrap()
+      .as_millis() as u64
+  });
+  let profile = HostsProfile { id: id.clone(), name, content, created_at };
+  let json = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
+  fs::write(dir.join(format!("{}.json", id)), json).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn hosts_delete_profile(app: AppHandle, id: String) -> Result<(), String> {
+  let dir = profiles_dir(&app)?;
+  let path = dir.join(format!("{}.json", id));
+  if path.exists() {
+    fs::remove_file(path).map_err(|e| e.to_string())?;
+  }
+  Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_opener::init())
-    .invoke_handler(tauri::generate_handler![greet, run_performance_test])
+    .invoke_handler(tauri::generate_handler![
+      greet,
+      run_performance_test,
+      hosts_get_content,
+      hosts_apply,
+      hosts_restore,
+      hosts_get_backup,
+      hosts_list_profiles,
+      hosts_save_profile,
+      hosts_delete_profile,
+    ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

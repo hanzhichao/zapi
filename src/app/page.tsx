@@ -1,7 +1,7 @@
 "use client";
 
 import {useCallback, useRef, useState} from "react";
-import {Clock, FolderOpen, GripVertical, Moon, Play, Settings, Sun, Variable, Zap,} from "lucide-react";
+import {Clock, FolderOpen, Globe, GripVertical, Moon, Play, Settings, Sun, Variable, Zap,} from "lucide-react";
 import {useAppStore} from "@/lib/store";
 import {CollectionSidebar} from "@/components/CollectionSidebar";
 import {RequestEditor, RequestUrlBar, RequestConfigTabs} from "@/components/RequestEditor";
@@ -12,11 +12,12 @@ import {HistoryPanel} from "@/components/HistoryPanel";
 import {RunnerPanel} from "@/components/RunnerPanel";
 import {RunnerReport} from "@/components/RunnerReport";
 import {ConsolePanel} from "@/components/ConsolePanel";
+import {SwitchHostsPanel} from "@/components/SwitchHostsPanel";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 
-type SidebarTab = "collections" | "history" | "variables" | "runner";
+type SidebarTab = "collections" | "history" | "variables" | "runner" | "hosts";
 
 function useDragResize(initial: number, min: number, max: number) {
   const [size, setSize] = useState(initial);
@@ -152,6 +153,7 @@ export default function Home() {
               {id: "history", icon: Clock, label: "History"},
               {id: "variables", icon: Variable, label: "Variables"},
               {id: "runner", icon: Play, label: "Runner"},
+              {id: "hosts", icon: Globe, label: "Hosts Manager"},
             ] as const
           ).map(({id, icon: Icon, label}) => (
             <Tooltip key={id}>
@@ -199,6 +201,7 @@ export default function Home() {
           {sidebarTab === "history" && <HistoryPanel/>}
           {sidebarTab === "variables" && <VariablesPanel/>}
           {sidebarTab === "runner" && <RunnerPanel/>}
+          {sidebarTab === "hosts" && <SwitchHostsPanel/>}
         </div>
 
         <DragHandle direction="horizontal" onMouseDown={sidebar.onMouseDown}/>
