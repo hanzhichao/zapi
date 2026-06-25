@@ -1,0 +1,31 @@
+{
+  "id": "jwt-decode",
+  "name": "JWT Decoder",
+  "version": "1.0.0",
+  "description": "Automatically decodes JWT tokens found in Authorization headers or response bodies, adding readable JSON annotations.",
+  "author": "zapi",
+  "hooks": ["beforeRequest", "afterResponse"],
+  "config": [
+    {
+      "key": "decodeRequest",
+      "label": "Decode Request JWTs",
+      "type": "boolean",
+      "default": "true",
+      "description": "Log decoded JWT from Authorization header in the plugin console."
+    },
+    {
+      "key": "decodeResponse",
+      "label": "Decode Response JWTs",
+      "type": "boolean",
+      "default": "true",
+      "description": "Log decoded JWTs found in response body."
+    },
+    {
+      "key": "annotateResponse",
+      "label": "Annotate Response Body",
+      "type": "boolean",
+      "default": "false",
+      "description": "Replace JWT strings in the response body with decoded JSON (for display only)."
+    }
+  ]
+}

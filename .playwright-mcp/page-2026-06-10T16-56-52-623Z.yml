@@ -1,0 +1,320 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - img [ref=e5]
+      - button [ref=e7]:
+        - img
+      - button [ref=e8]:
+        - img
+      - button [ref=e9]:
+        - img
+      - button [ref=e10]:
+        - img
+      - button [ref=e11]:
+        - img
+      - button [ref=e12]:
+        - img
+      - button [ref=e13]:
+        - img
+      - button [ref=e14]:
+        - img
+      - button [ref=e15]:
+        - img
+      - button [ref=e16]:
+        - img
+      - button [ref=e17]:
+        - img
+      - button [ref=e18]:
+        - img
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]: No workspace open
+        - button "Open" [ref=e23]:
+          - img
+          - text: Open
+        - button "New" [ref=e24]:
+          - img
+          - text: New
+      - generic [ref=e25]:
+        - generic [ref=e26]: Collections
+        - generic [ref=e27]:
+          - button "Import" [ref=e28]:
+            - img
+          - button "New Collection" [ref=e29]:
+            - img
+      - generic [ref=e31]:
+        - img [ref=e32]
+        - textbox "Search collections…" [ref=e35]
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41] [cursor=pointer]:
+            - button [ref=e42]:
+              - img [ref=e43]
+            - generic [ref=e45]: Sample API Collection
+            - generic [ref=e46]:
+              - button "New HTTP Request (⌘N)" [ref=e47]:
+                - img
+              - button [ref=e48]:
+                - img
+          - generic [ref=e50] [cursor=pointer]:
+            - generic [ref=e51]: GET
+            - generic [ref=e52]: Get Users
+            - button [ref=e53]:
+              - img
+        - generic [ref=e54]:
+          - generic [ref=e55] [cursor=pointer]:
+            - button [ref=e56]:
+              - img [ref=e57]
+            - generic [ref=e59]: stusdt
+            - generic [ref=e60]:
+              - button "New HTTP Request (⌘N)" [ref=e61]:
+                - img
+              - button [ref=e62]:
+                - img
+          - generic [ref=e63]:
+            - generic [ref=e64] [cursor=pointer]:
+              - generic [ref=e65]: GET
+              - generic [ref=e66]: stUSDT Dashboard
+              - button [ref=e67]:
+                - img
+            - generic [ref=e68] [cursor=pointer]:
+              - generic [ref=e69]: GET
+              - generic [ref=e70]: stUSDT Ethereum Dashboard
+              - button [ref=e71]:
+                - img
+            - generic [ref=e72] [cursor=pointer]:
+              - generic [ref=e73]: GET
+              - generic [ref=e74]: Address Overview
+              - button [ref=e75]:
+                - img
+        - generic [ref=e76]:
+          - generic [ref=e77] [cursor=pointer]:
+            - button [ref=e78]:
+              - img [ref=e79]
+            - generic [ref=e81]: 实时课堂 Demo API
+            - generic [ref=e82]:
+              - button "New HTTP Request (⌘N)" [ref=e83]:
+                - img
+              - button [ref=e84]:
+                - img
+          - generic [ref=e85]:
+            - generic [ref=e87] [cursor=pointer]:
+              - img [ref=e267]
+              - generic [ref=e90]: HTTP Session / Cookie
+              - generic [ref=e91]:
+                - button [ref=e92]:
+                  - img
+                - button [ref=e93]:
+                  - img
+            - generic [ref=e95] [cursor=pointer]:
+              - img [ref=e96]
+              - generic [ref=e98]: GraphQL
+              - generic [ref=e99]:
+                - button [ref=e100]:
+                  - img
+                - button [ref=e101]:
+                  - img
+            - generic [ref=e103] [cursor=pointer]:
+              - img [ref=e104]
+              - generic [ref=e106]: SOAP 1.1
+              - generic [ref=e107]:
+                - button [ref=e108]:
+                  - img
+                - button [ref=e109]:
+                  - img
+            - generic [ref=e111] [cursor=pointer]:
+              - img [ref=e112]
+              - generic [ref=e114]: SOAP 1.2
+              - generic [ref=e115]:
+                - button [ref=e116]:
+                  - img
+                - button [ref=e117]:
+                  - img
+            - generic [ref=e119] [cursor=pointer]:
+              - img [ref=e120]
+              - generic [ref=e122]: JSON-RPC 2.0
+              - generic [ref=e123]:
+                - button [ref=e124]:
+                  - img
+                - button [ref=e125]:
+                  - img
+            - generic [ref=e127] [cursor=pointer]:
+              - img [ref=e128]
+              - generic [ref=e130]: XML-RPC
+              - generic [ref=e131]:
+                - button [ref=e132]:
+                  - img
+                - button [ref=e133]:
+                  - img
+            - generic [ref=e135] [cursor=pointer]:
+              - img [ref=e136]
+              - generic [ref=e138]: gRPC
+              - generic [ref=e139]:
+                - button [ref=e140]:
+                  - img
+                - button [ref=e141]:
+                  - img
+            - generic [ref=e143] [cursor=pointer]:
+              - img [ref=e144]
+              - generic [ref=e146]: WebSocket
+              - generic [ref=e147]:
+                - button [ref=e148]:
+                  - img
+                - button [ref=e149]:
+                  - img
+            - generic [ref=e151] [cursor=pointer]:
+              - img [ref=e152]
+              - generic [ref=e154]: tRPC
+              - generic [ref=e155]:
+                - button [ref=e156]:
+                  - img
+                - button [ref=e157]:
+                  - img
+            - generic [ref=e159] [cursor=pointer]:
+              - img [ref=e160]
+              - generic [ref=e162]: MQTT
+              - generic [ref=e163]:
+                - button [ref=e164]:
+                  - img
+                - button [ref=e165]:
+                  - img
+            - generic [ref=e167] [cursor=pointer]:
+              - img [ref=e168]
+              - generic [ref=e170]: CAN Bus
+              - generic [ref=e171]:
+                - button [ref=e172]:
+                  - img
+                - button [ref=e173]:
+                  - img
+    - generic [ref=e181]:
+      - generic [ref=e182]:
+        - generic [ref=e183]:
+          - generic [ref=e216] [cursor=pointer]:
+            - generic [ref=e217]: GET
+            - generic [ref=e218]: Get Users
+            - button [ref=e219]:
+              - img [ref=e220]
+          - generic [ref=e186]:
+            - button "No Environment" [ref=e187]:
+              - generic [ref=e189]: No Environment
+              - img
+            - button "Toggle Console" [ref=e190]:
+              - img
+            - 'button "布局: 上下分割 → 点击切换" [ref=e191]':
+              - img
+        - generic [ref=e193]:
+          - generic [ref=e223]:
+            - combobox [ref=e224]:
+              - generic: GET
+              - img [ref=e225]
+            - 'textbox "Enter URL · Use {{variable}} for substitution" [ref=e227]':
+              - /placeholder: "Enter URL  ·  Use {{variable}} for substitution"
+              - text: https://jsonplaceholder.typicode.com/users
+            - generic [ref=e228]:
+              - button "Send" [ref=e229]:
+                - img
+                - text: Send
+              - button [ref=e230]:
+                - img [ref=e231]
+          - generic [ref=e234]:
+            - generic [ref=e235]:
+              - button "Params" [ref=e236]
+              - button "Headers" [ref=e237]
+              - button "Body" [ref=e238]:
+                - text: Body
+                - img [ref=e239]
+              - button "Auth" [ref=e241]:
+                - text: Auth
+                - img [ref=e242]
+              - button "Pre-Script" [ref=e244]
+              - button "Assertions" [ref=e245]
+              - button "Info" [active] [ref=e246]: Info
+            - tabpanel [ref=e269]:
+              - generic [ref=e271]:
+                - generic [ref=e272]:
+                  - generic [ref=e273]:
+                    - img [ref=e275]
+                    - heading "接口信息" [level=3] [ref=e277]
+                  - generic [ref=e278]:
+                    - generic [ref=e279]:
+                      - text: 接口名称
+                      - textbox [ref=e280]: Get Users
+                    - generic [ref=e281]:
+                      - text: 接口描述
+                      - textbox "描述该接口的用途、使用场景及注意事项…" [ref=e282]: This request retrieves a list of users from the JSONPlaceholder API.
+                    - generic [ref=e283]:
+                      - text: 优先级
+                      - combobox [ref=e284]:
+                        - generic [ref=e285]: 未设置
+                        - img [ref=e286]
+                    - generic [ref=e288]:
+                      - text: 状态
+                      - combobox [ref=e289]:
+                        - generic [ref=e290]: 未设置
+                        - img [ref=e291]
+                    - generic [ref=e293]:
+                      - generic [ref=e294]:
+                        - img [ref=e295]
+                        - text: 认证
+                      - generic [ref=e298]:
+                        - combobox [ref=e299]:
+                          - generic [ref=e300]:
+                            - img [ref=e302]
+                            - generic:
+                              - generic:
+                                - img
+                                - text: No Auth
+                          - img [ref=e305]
+                        - paragraph [ref=e307]:
+                          - text: No authentication. Add an
+                          - strong [ref=e308]: Authorization
+                          - text: header manually if needed.
+                - generic [ref=e309]:
+                  - generic [ref=e310]:
+                    - img [ref=e312]
+                    - heading "请求参数" [level=3] [ref=e313]
+                  - button "Add" [ref=e315]:
+                    - img
+                    - text: Add
+                - generic [ref=e316]:
+                  - generic [ref=e317]:
+                    - img [ref=e319]
+                    - heading "请求头" [level=3] [ref=e320]
+                  - button "Add" [ref=e322]:
+                    - img
+                    - text: Add
+                - generic [ref=e323]:
+                  - generic [ref=e324]:
+                    - img [ref=e326]
+                    - heading "响应示例" [level=3] [ref=e330]
+                  - button "添加响应场景" [ref=e331]:
+                    - img [ref=e332]
+                    - text: 添加响应场景
+                - generic [ref=e333]:
+                  - generic [ref=e334]:
+                    - img [ref=e336]
+                    - heading "Schema 定义" [level=3] [ref=e341]
+                  - generic [ref=e342]:
+                    - generic [ref=e343]:
+                      - generic [ref=e344]: 请求体 Schema (JSON Schema)
+                      - 'textbox "{ \"type\": \"object\", \"properties\": { \"id\": { \"type\": \"integer\" } } }" [ref=e345]':
+                        - /placeholder: "{\n  \"type\": \"object\",\n  \"properties\": { \"id\": { \"type\": \"integer\" } }\n}"
+                    - generic [ref=e346]:
+                      - generic [ref=e347]: 响应体 Schema (JSON Schema)
+                      - 'textbox "{ \"type\": \"object\", \"properties\": { \"data\": { \"type\": \"array\" } } }" [ref=e348]':
+                        - /placeholder: "{\n  \"type\": \"object\",\n  \"properties\": { \"data\": { \"type\": \"array\" } }\n}"
+      - generic [ref=e203]:
+        - generic [ref=e204]:
+          - button "Response" [ref=e205]
+          - button "Code" [ref=e252]:
+            - img [ref=e253]
+            - text: Code
+          - button "Diff" [ref=e206]:
+            - img [ref=e207]
+            - text: Diff
+          - button "Generate API Documentation" [ref=e210]:
+            - img [ref=e211]
+        - paragraph [ref=e215]: Hit Send to get a response
+  - alert [ref=e257]
+  - button "Open Next.js Dev Tools" [ref=e263] [cursor=pointer]:
+    - img [ref=e264]

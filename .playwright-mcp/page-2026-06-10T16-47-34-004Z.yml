@@ -1,0 +1,107 @@
+- generic [ref=e1]:
+  - generic [active]:
+    - generic [ref=e261] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e262]:
+        - img [ref=e263]
+      - generic [ref=e266]:
+        - button "Open issues overlay" [ref=e267]:
+          - generic [ref=e268]:
+            - generic [ref=e269]: "0"
+            - generic [ref=e270]: "1"
+          - generic [ref=e271]: Issue
+        - button "Collapse issues badge" [ref=e272]:
+          - img [ref=e273]
+    - generic [ref=e277]:
+      - generic [ref=e278]:
+        - generic [ref=e279]:
+          - navigation [ref=e280]:
+            - button "previous" [disabled] [ref=e281]:
+              - img "previous" [ref=e282]
+            - generic [ref=e284]:
+              - generic [ref=e285]: 1/
+              - text: "1"
+            - button "next" [disabled] [ref=e286]:
+              - img "next" [ref=e287]
+          - img
+        - generic [ref=e289]:
+          - link "Next.js 15.3.3 (outdated) Turbopack" [ref=e290] [cursor=pointer]:
+            - /url: https://nextjs.org/docs/messages/version-staleness
+            - img [ref=e291]
+            - generic "An outdated version detected (latest is 16.2.9), upgrade is highly recommended!" [ref=e293]: Next.js 15.3.3 (outdated)
+            - generic [ref=e294]: Turbopack
+          - img
+      - generic [ref=e295]:
+        - dialog "Runtime Error" [ref=e296]:
+          - generic [ref=e298]:
+            - generic [ref=e299]:
+              - generic [ref=e300]:
+                - generic [ref=e301]:
+                  - generic [ref=e303]: Runtime Error
+                  - generic [ref=e304]:
+                    - button "Copy Stack Trace" [ref=e305] [cursor=pointer]:
+                      - img [ref=e306]
+                    - button "No related documentation found" [disabled] [ref=e308]:
+                      - img [ref=e309]
+                    - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools" [ref=e311] [cursor=pointer]:
+                      - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+                      - img [ref=e312]
+                - paragraph [ref=e321]: "Error: A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder."
+              - generic [ref=e322]:
+                - generic [ref=e323]:
+                  - paragraph [ref=e325]:
+                    - img [ref=e327]
+                    - generic [ref=e330]: src/components/ui/select.tsx (108:3) @ _c8
+                    - button "Open in editor" [ref=e331] [cursor=pointer]:
+                      - img [ref=e333]
+                  - generic [ref=e336]: "106 | React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> 107 | >(({className, children, ...props}, ref) => ( > 108 | <SelectPrimitive.Item | ^ 109 | ref={ref} 110 | className={cn( 111 | \"relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50\","
+                - generic [ref=e337]:
+                  - generic [ref=e338]:
+                    - paragraph [ref=e339]:
+                      - text: Call Stack
+                      - generic [ref=e340]: "7"
+                    - button "Show 2 ignore-listed frame(s)" [ref=e341] [cursor=pointer]:
+                      - text: Show 2 ignore-listed frame(s)
+                      - img [ref=e342]
+                  - generic [ref=e344]:
+                    - generic [ref=e345]:
+                      - text: _c8
+                      - button [ref=e346] [cursor=pointer]:
+                        - img [ref=e347]
+                    - text: src/components/ui/select.tsx (108:3)
+                  - generic [ref=e349]:
+                    - generic [ref=e350]:
+                      - text: InfoTab
+                      - button [ref=e351] [cursor=pointer]:
+                        - img [ref=e352]
+                    - text: src/components/RequestEditor.tsx (969:19)
+                  - generic [ref=e354]:
+                    - generic [ref=e355]:
+                      - text: RequestConfigTabs
+                      - button [ref=e356] [cursor=pointer]:
+                        - img [ref=e357]
+                    - text: src/components/RequestEditor.tsx (492:11)
+                  - generic [ref=e359]:
+                    - generic [ref=e360]:
+                      - text: RequestEditor
+                      - button [ref=e361] [cursor=pointer]:
+                        - img [ref=e362]
+                    - text: src/components/RequestEditor.tsx (1523:47)
+                  - generic [ref=e364]:
+                    - generic [ref=e365]:
+                      - text: Home
+                      - button [ref=e366] [cursor=pointer]:
+                        - img [ref=e367]
+                    - text: src/app/page.tsx (349:59)
+            - generic [ref=e369]:
+              - generic [ref=e370]: "1"
+              - generic [ref=e371]: "2"
+        - contentinfo [ref=e372]:
+          - region "Error feedback" [ref=e373]:
+            - paragraph [ref=e374]:
+              - link "Was this helpful?" [ref=e375] [cursor=pointer]:
+                - /url: https://nextjs.org/telemetry#error-feedback
+            - button "Mark as helpful" [ref=e376] [cursor=pointer]:
+              - img [ref=e377]
+            - button "Mark as not helpful" [ref=e380] [cursor=pointer]:
+              - img [ref=e381]
+  - 'heading "Application error: a client-side exception has occurred while loading localhost (see the browser console for more information)." [level=2] [ref=e385]'

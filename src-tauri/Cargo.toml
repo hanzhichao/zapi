@@ -26,7 +26,17 @@ tauri-plugin-sql = { version = "2", features = ["sqlite"] }
 tauri-plugin-fs = "2"
 tauri-plugin-http = "2"
 reqwest = { version = "0.12", default-features = false, features = ["native-tls"] }
-tokio = { version = "1", features = ["sync", "time"] }
+tokio = { version = "1", features = ["sync", "time", "net", "rt", "io-util", "macros", "rt-multi-thread", "process"] }
+
+# Proxy / TLS interception
+rcgen     = { version = "0.13", features = ["pem", "x509-parser"] }
+rustls    = { version = "0.23", default-features = false, features = ["ring", "std"] }
+tokio-rustls = "0.26"
+webpki-roots = "0.26"
+rustls-pki-types = "1"
+dashmap   = "6"
+uuid      = { version = "1", features = ["v4"] }
+base64    = "0.22"
 
 [features]
 # by default Tauri runs in production mode

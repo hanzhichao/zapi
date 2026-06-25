@@ -29,7 +29,19 @@ export function buildHeaders(
     if (addTo === "header") headers[key] = value;
   }
 
-  if (request.body.type === "json" && !headers["Content-Type"]) {
+  const proto = request.protocol ?? "http";
+  if ((proto === "graphql" || request.body.type === "graphql") && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  } else if (proto === "soap" || request.body.type === "soap") {
+    if (!headers["Content-Type"]) {
+      headers["Content-Type"] = request.soapVersion === "1.2"
+        ? "application/soap+xml; charset=utf-8"
+        : "text/xml; charset=utf-8";
+    }
+    if (request.soapAction && !headers["SOAPAction"]) {
+      headers["SOAPAction"] = `"${request.soapAction}"`;
+    }
+  } else if (request.body.type === "json" && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   } else if (request.body.type === "xml" && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/xml";
@@ -40,9 +52,35 @@ export function buildHeaders(
   return { ...headers, ...extraHeaders };
 }
 
+function buildSoapEnvelope(body: string, version: "1.1" | "1.2" = "1.1"): string {
+  if (version === "1.2") {
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">\n  <soap12:Header/>\n  <soap12:Body>\n    ${body}\n  </soap12:Body>\n</soap12:Envelope>`;
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Header/>\n  <soap:Body>\n    ${body}\n  </soap:Body>\n</soap:Envelope>`;
+}
+
+function buildGraphQLBody(request: ApiRequest): string {
+  const query = request.body.content || "";
+  let variables: unknown = undefined;
+  if (request.graphqlVariables?.trim()) {
+    try { variables = JSON.parse(request.graphqlVariables); } catch { /* keep undefined */ }
+  }
+  const payload: Record<string, unknown> = { query };
+  if (variables !== undefined) payload.variables = variables;
+  if (request.graphqlOperationName?.trim()) payload.operationName = request.graphqlOperationName;
+  return JSON.stringify(payload);
+}
+
 export function buildBody(request: ApiRequest): BodyInit | null {
+  const proto = request.protocol ?? "http";
+
+  if (proto === "graphql") return buildGraphQLBody(request);
+  if (proto === "soap") return buildSoapEnvelope(request.body.content, request.soapVersion ?? "1.1");
+
   if (request.method === "GET" || request.method === "HEAD") return null;
   if (request.body.type === "none") return null;
+  if (request.body.type === "graphql") return buildGraphQLBody(request);
+  if (request.body.type === "soap") return buildSoapEnvelope(request.body.content, request.soapVersion ?? "1.1");
   if (
     request.body.type === "json" ||
     request.body.type === "xml" ||
@@ -68,8 +106,14 @@ export function buildBody(request: ApiRequest): BodyInit | null {
 }
 
 export function buildBodyString(request: ApiRequest): string | null {
+  const proto = request.protocol ?? "http";
+  if (proto === "graphql") return buildGraphQLBody(request);
+  if (proto === "soap") return buildSoapEnvelope(request.body.content, request.soapVersion ?? "1.1");
+
   if (request.method === "GET" || request.method === "HEAD") return null;
   if (request.body.type === "none") return null;
+  if (request.body.type === "graphql") return buildGraphQLBody(request);
+  if (request.body.type === "soap") return buildSoapEnvelope(request.body.content, request.soapVersion ?? "1.1");
   if (
     request.body.type === "json" ||
     request.body.type === "xml" ||

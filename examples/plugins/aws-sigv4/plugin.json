@@ -1,0 +1,46 @@
+{
+  "id": "aws-sigv4",
+  "name": "AWS Signature V4",
+  "version": "1.0.0",
+  "description": "Signs requests with AWS Signature Version 4 for authenticating with AWS services (S3, API Gateway, Lambda, etc.).",
+  "author": "zapi",
+  "hooks": ["beforeRequest"],
+  "config": [
+    {
+      "key": "accessKeyId",
+      "label": "Access Key ID",
+      "type": "string",
+      "required": true,
+      "placeholder": "AKIAIOSFODNN7EXAMPLE"
+    },
+    {
+      "key": "secretAccessKey",
+      "label": "Secret Access Key",
+      "type": "secret",
+      "required": true,
+      "placeholder": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    },
+    {
+      "key": "sessionToken",
+      "label": "Session Token (optional)",
+      "type": "secret",
+      "description": "For temporary credentials from STS.",
+      "placeholder": "Leave empty for permanent credentials"
+    },
+    {
+      "key": "region",
+      "label": "AWS Region",
+      "type": "string",
+      "default": "us-east-1",
+      "placeholder": "us-east-1"
+    },
+    {
+      "key": "service",
+      "label": "AWS Service",
+      "type": "string",
+      "default": "execute-api",
+      "placeholder": "execute-api",
+      "description": "AWS service name, e.g. s3, execute-api, lambda"
+    }
+  ]
+}

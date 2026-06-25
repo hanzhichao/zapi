@@ -1,0 +1,18 @@
+{
+  "id": "timestamp-tag",
+  "name": "Timestamp Tag",
+  "version": "1.0.0",
+  "description": "Provides {{timestamp-tag.now}} and {{timestamp-tag.iso}} template tags for inserting the current time into requests.",
+  "author": "zapi",
+  "hooks": ["templateTag"],
+  "config": [
+    {
+      "key": "offsetMs",
+      "label": "Time Offset (ms)",
+      "type": "number",
+      "default": "0",
+      "description": "Add this many milliseconds to the current time (can be negative).",
+      "placeholder": "0"
+    }
+  ]
+}

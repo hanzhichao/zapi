@@ -1,0 +1,9 @@
+{
+  "id": "uuid-tag",
+  "name": "UUID Tag",
+  "version": "1.0.0",
+  "description": "Generates random UUIDs and short IDs via template tags.",
+  "author": "zapi",
+  "hooks": ["templateTag"],
+  "config": []
+}

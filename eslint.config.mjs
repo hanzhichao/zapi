@@ -123,8 +123,12 @@ const eslintConfig = tseslint.config(
       "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/no-floating-promises": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/non-nullable-type-assertion-style": "off",
       "@typescript-eslint/restrict-plus-operands": "off",
       "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
     },
     languageOptions: {
       parserOptions: {

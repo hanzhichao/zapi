@@ -1,3 +1,7 @@
+mod proxy;
+mod plugins;
+pub use proxy::ProxyState;
+
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
@@ -6,6 +10,8 @@ use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
 use tauri::{AppHandle, Emitter, Manager};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::net::TcpListener;
 
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
@@ -395,6 +401,223 @@ async fn run_performance_test(
   })
 }
 
+// ── Mock Server ──────────────────────────────────────────────────────────────
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct MockEndpointData {
+  pub id: String,
+  pub name: String,
+  pub method: String,
+  pub path: String,
+  pub status_code: u16,
+  pub response_headers: Vec<(String, String)>,
+  pub response_body: String,
+  pub content_type: String,
+  pub delay: u64,  // ms
+  pub enabled: bool,
+}
+
+pub struct MockServerState {
+  pub endpoints: Arc<tokio::sync::Mutex<Vec<MockEndpointData>>>,
+  pub shutdown_tx: tokio::sync::Mutex<Option<tokio::sync::oneshot::Sender<()>>>,
+  pub running: Arc<AtomicBool>,
+}
+
+impl MockServerState {
+  pub fn new() -> Self {
+    MockServerState {
+      endpoints: Arc::new(tokio::sync::Mutex::new(Vec::new())),
+      shutdown_tx: tokio::sync::Mutex::new(None),
+      running: Arc::new(AtomicBool::new(false)),
+    }
+  }
+}
+
+fn http_status_text(code: u16) -> &'static str {
+  match code {
+    200 => "OK", 201 => "Created", 204 => "No Content",
+    301 => "Moved Permanently", 302 => "Found",
+    400 => "Bad Request", 401 => "Unauthorized", 403 => "Forbidden",
+    404 => "Not Found", 405 => "Method Not Allowed", 409 => "Conflict",
+    422 => "Unprocessable Entity", 429 => "Too Many Requests",
+    500 => "Internal Server Error", 502 => "Bad Gateway", 503 => "Service Unavailable",
+    _ => "Unknown",
+  }
+}
+
+async fn handle_mock_connection(
+  mut stream: tokio::net::TcpStream,
+  endpoints: Arc<tokio::sync::Mutex<Vec<MockEndpointData>>>,
+) {
+  let mut buf = vec![0u8; 8192];
+  let n = match stream.read(&mut buf).await {
+    Ok(n) if n > 0 => n,
+    _ => return,
+  };
+
+  let req_str = String::from_utf8_lossy(&buf[..n]);
+  let first_line = req_str.lines().next().unwrap_or("");
+  let parts: Vec<&str> = first_line.split_whitespace().collect();
+  let method = parts.first().copied().unwrap_or("GET").to_uppercase();
+  let raw_path = parts.get(1).copied().unwrap_or("/");
+  // Strip query string
+  let path = raw_path.split('?').next().unwrap_or("/");
+
+  // CORS preflight
+  if method == "OPTIONS" {
+    let resp = "HTTP/1.1 204 No Content\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS\r\nAccess-Control-Allow-Headers: *\r\n\r\n";
+    let _ = stream.write_all(resp.as_bytes()).await;
+    return;
+  }
+
+  let eps = endpoints.lock().await;
+  let ep = eps.iter().find(|e| {
+    if !e.enabled { return false; }
+    let method_ok = e.method == "*" || e.method.eq_ignore_ascii_case(&method);
+    let path_ok = e.path == path || {
+      // Wildcard suffix: /api/users/* matches /api/users/1
+      e.path.ends_with("/*") && path.starts_with(e.path.trim_end_matches("/*"))
+    };
+    method_ok && path_ok
+  }).cloned();
+  drop(eps);
+
+  if let Some(ep) = ep {
+    if ep.delay > 0 {
+      tokio::time::sleep(Duration::from_millis(ep.delay)).await;
+    }
+    let body = ep.response_body.as_bytes();
+    let extra: String = ep.response_headers.iter()
+      .filter(|(k, _)| !k.is_empty())
+      .map(|(k, v)| format!("{}: {}\r\n", k, v))
+      .collect();
+    let status_text = http_status_text(ep.status_code);
+    let head = format!(
+      "HTTP/1.1 {} {}\r\nContent-Type: {}\r\nContent-Length: {}\r\nAccess-Control-Allow-Origin: *\r\n{}",
+      ep.status_code, status_text, ep.content_type, body.len(), extra
+    );
+    let _ = stream.write_all(head.as_bytes()).await;
+    let _ = stream.write_all(b"\r\n").await;
+    let _ = stream.write_all(body).await;
+  } else {
+    let body = format!(r#"{{"error":"Not Found","path":"{}"}}"#, path);
+    let head = format!(
+      "HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\nContent-Length: {}\r\nAccess-Control-Allow-Origin: *\r\n\r\n",
+      body.len()
+    );
+    let _ = stream.write_all(head.as_bytes()).await;
+    let _ = stream.write_all(body.as_bytes()).await;
+  }
+}
+
+#[tauri::command]
+async fn mock_server_start(
+  port: u16,
+  state: tauri::State<'_, MockServerState>,
+) -> Result<(), String> {
+  // Stop existing server if running
+  {
+    let mut tx = state.shutdown_tx.lock().await;
+    if let Some(sender) = tx.take() {
+      let _ = sender.send(());
+    }
+  }
+
+  let listener = TcpListener::bind(format!("127.0.0.1:{}", port))
+    .await
+    .map_err(|e| format!("Cannot bind port {}: {}", port, e))?;
+
+  let endpoints = state.endpoints.clone();
+  let running = state.running.clone();
+
+  let (tx, rx) = tokio::sync::oneshot::channel::<()>();
+  {
+    let mut guard = state.shutdown_tx.lock().await;
+    *guard = Some(tx);
+  }
+
+  running.store(true, Ordering::Relaxed);
+
+  tokio::spawn(async move {
+    tokio::pin!(rx);
+    loop {
+      tokio::select! {
+        result = listener.accept() => {
+          if let Ok((stream, _)) = result {
+            let eps = endpoints.clone();
+            tokio::spawn(handle_mock_connection(stream, eps));
+          }
+        }
+        _ = &mut rx => { break; }
+      }
+    }
+    running.store(false, Ordering::Relaxed);
+  });
+
+  Ok(())
+}
+
+#[tauri::command]
+async fn mock_server_stop(
+  state: tauri::State<'_, MockServerState>,
+) -> Result<(), String> {
+  let mut tx = state.shutdown_tx.lock().await;
+  if let Some(sender) = tx.take() {
+    let _ = sender.send(());
+  }
+  state.running.store(false, Ordering::Relaxed);
+  Ok(())
+}
+
+#[tauri::command]
+async fn mock_server_status(
+  state: tauri::State<'_, MockServerState>,
+) -> Result<bool, String> {
+  Ok(state.running.load(Ordering::Relaxed))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MockEndpointInput {
+  pub id: String,
+  pub name: String,
+  pub method: String,
+  pub path: String,
+  #[serde(rename = "statusCode")]
+  pub status_code: u16,
+  #[serde(rename = "responseHeaders")]
+  pub response_headers: Vec<(String, String)>,
+  #[serde(rename = "responseBody")]
+  pub response_body: String,
+  #[serde(rename = "contentType")]
+  pub content_type: String,
+  pub delay: u64,
+  pub enabled: bool,
+}
+
+#[tauri::command]
+async fn mock_update_endpoints(
+  endpoints: Vec<MockEndpointInput>,
+  state: tauri::State<'_, MockServerState>,
+) -> Result<(), String> {
+  let mut eps = state.endpoints.lock().await;
+  *eps = endpoints
+    .into_iter()
+    .map(|e| MockEndpointData {
+      id: e.id,
+      name: e.name,
+      method: e.method,
+      path: e.path,
+      status_code: e.status_code,
+      response_headers: e.response_headers,
+      response_body: e.response_body,
+      content_type: e.content_type,
+      delay: e.delay,
+      enabled: e.enabled,
+    })
+    .collect();
+  Ok(())
+}
+
 // ── Hosts Manager ────────────────────────────────────────────────────────────
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -573,9 +796,85 @@ fn hosts_delete_profile(app: AppHandle, id: String) -> Result<(), String> {
   Ok(())
 }
 
+// ── Workspace file I/O ───────────────────────────────────────────────────────
+
+#[tauri::command]
+fn workspace_file_read(path: String) -> Result<Option<String>, String> {
+  let p = std::path::Path::new(&path);
+  if !p.exists() {
+    return Ok(None);
+  }
+  fs::read_to_string(p).map(Some).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn workspace_file_write(path: String, content: String) -> Result<(), String> {
+  let p = std::path::Path::new(&path);
+  if let Some(parent) = p.parent() {
+    fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+  }
+  fs::write(p, content).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn workspace_ensure_dir(path: String) -> Result<(), String> {
+  fs::create_dir_all(&path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn get_app_data_dir(app: AppHandle) -> Result<String, String> {
+  app.path()
+    .app_data_dir()
+    .map(|p| p.to_string_lossy().to_string())
+    .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn workspace_pick_directory() -> Result<Option<String>, String> {
+  #[cfg(target_os = "macos")]
+  {
+    let output = tokio::process::Command::new("osascript")
+      .arg("-e")
+      .arg("POSIX path of (choose folder with prompt \"Select Workspace Folder\")")
+      .output()
+      .await
+      .map_err(|e| e.to_string())?;
+    if output.status.success() {
+      let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+      if !path.is_empty() {
+        return Ok(Some(path));
+      }
+    }
+    return Ok(None);
+  }
+  #[cfg(target_os = "windows")]
+  {
+    let output = tokio::process::Command::new("powershell")
+      .args(["-NoProfile", "-Command",
+        "[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null; \
+         $f = New-Object System.Windows.Forms.FolderBrowserDialog; \
+         $f.Description = 'Select Workspace Folder'; \
+         if ($f.ShowDialog() -eq 'OK') { $f.SelectedPath } else { '' }"])
+      .output()
+      .await
+      .map_err(|e| e.to_string())?;
+    let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    if !path.is_empty() {
+      return Ok(Some(path));
+    }
+    return Ok(None);
+  }
+  #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+  {
+    Ok(None)
+  }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
+    .manage(MockServerState::new())
+    .manage(ProxyState::new())
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_opener::init())
     .invoke_handler(tauri::generate_handler![
@@ -588,6 +887,34 @@ pub fn run() {
       hosts_list_profiles,
       hosts_save_profile,
       hosts_delete_profile,
+      mock_server_start,
+      mock_server_stop,
+      mock_server_status,
+      mock_update_endpoints,
+      // ── Plugins
+      plugins::plugin_get_dir,
+      plugins::plugin_list,
+      plugins::plugin_read_file,
+      plugins::plugin_install,
+      plugins::plugin_delete,
+      plugins::plugin_open_dir,
+      // ── Proxy
+      proxy::proxy_start,
+      proxy::proxy_stop,
+      proxy::proxy_status,
+      proxy::proxy_get_captures,
+      proxy::proxy_clear_captures,
+      proxy::proxy_get_ca_cert_pem,
+      proxy::proxy_get_ca_cert_path,
+      proxy::proxy_install_ca_cert,
+      proxy::proxy_pin_request,
+      proxy::proxy_delete_capture,
+      // ── Workspace
+      workspace_file_read,
+      workspace_file_write,
+      workspace_ensure_dir,
+      get_app_data_dir,
+      workspace_pick_directory,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

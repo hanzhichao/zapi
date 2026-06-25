@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Columns2, TerminalSquare, Rows2, X } from "lucide-react";
+import { ChevronDown, TerminalSquare, X } from "lucide-react";
+import type { LayoutMode } from "@/lib/types";
 import { getMethodColor, useAppStore } from "@/lib/store";
 import { EnvironmentManager } from "@/components/EnvironmentManager";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,48 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import type { HttpMethod } from "@/lib/types";
+import type { ApiRequest, HttpMethod } from "@/lib/types";
+
+export const LAYOUT_LABELS: Record<LayoutMode, string> = {
+  vertical: "上下分割", horizontal: "左右分割", hidden: "隐藏响应", fullscreen: "全屏响应",
+};
+
+export function LayoutCycleIcon({ mode }: { mode: LayoutMode }) {
+  if (mode === "vertical") return (
+    <svg viewBox="0 0 14 14" className="h-3.5 w-3.5">
+      <rect x="1" y="1" width="12" height="5" rx="1.5" fill="currentColor" opacity="0.85" />
+      <rect x="1" y="8" width="12" height="5" rx="1.5" fill="currentColor" opacity="0.4" />
+    </svg>
+  );
+  if (mode === "horizontal") return (
+    <svg viewBox="0 0 14 14" className="h-3.5 w-3.5">
+      <rect x="1" y="1" width="5" height="12" rx="1.5" fill="currentColor" opacity="0.85" />
+      <rect x="8" y="1" width="5" height="12" rx="1.5" fill="currentColor" opacity="0.4" />
+    </svg>
+  );
+  if (mode === "hidden") return (
+    <svg viewBox="0 0 14 14" className="h-3.5 w-3.5">
+      <rect x="1" y="1" width="12" height="12" rx="1.5" fill="currentColor" opacity="0.85" />
+      <line x1="1" y1="10" x2="13" y2="10" stroke="currentColor" strokeWidth="1.5" opacity="0.25" />
+    </svg>
+  );
+  // fullscreen
+  return (
+    <svg viewBox="0 0 14 14" className="h-3.5 w-3.5">
+      <rect x="1" y="1" width="12" height="12" rx="1.5" fill="currentColor" opacity="0.35" />
+      <rect x="3" y="3" width="8" height="8" rx="1" fill="currentColor" opacity="0.9" />
+    </svg>
+  );
+}
+
+function getTabBadge(req: ApiRequest): { label: string; className: string } {
+  const proto = req.protocol;
+  if (proto === "websocket") return { label: "WS",   className: "text-green-500" };
+  if (proto === "graphql")   return { label: "GQL",  className: "text-pink-500" };
+  if (proto === "grpc")      return { label: "gRPC", className: "text-purple-500" };
+  if (proto === "soap")      return { label: "SOAP", className: "text-orange-400" };
+  return { label: req.method, className: getMethodColor(req.method as HttpMethod) };
+}
 
 export function RequestTabsBar() {
   const {
@@ -61,14 +103,11 @@ export function RequestTabsBar() {
                   )}
                   onClick={() => setActiveRequest(id)}
                 >
-                  <span
-                    className={cn(
-                      "text-[10px] font-bold shrink-0",
-                      getMethodColor(req.method as HttpMethod)
-                    )}
-                  >
-                    {req.method}
-                  </span>
+                  {(() => { const b = getTabBadge(req); return (
+                    <span className={cn("text-[10px] font-bold shrink-0", b.className)}>
+                      {b.label}
+                    </span>
+                  ); })()}
                   <span className="text-xs truncate flex-1">{req.name}</span>
                   <button
                     className="h-3.5 w-3.5 shrink-0 rounded-sm opacity-0 group-hover:opacity-60 hover:!opacity-100 flex items-center justify-center hover:bg-muted-foreground/20 transition-opacity"
@@ -143,19 +182,19 @@ export function RequestTabsBar() {
             <TerminalSquare className="h-3.5 w-3.5" />
           </Button>
 
-          {/* Layout toggle */}
+          {/* Layout cycle button — vertical → horizontal → hidden → fullscreen */}
           <Button
             variant="ghost"
             size="icon"
             className="h-7 w-7 text-muted-foreground hover:text-foreground"
-            title={layoutMode === "vertical" ? "Switch to horizontal layout" : "Switch to vertical layout"}
-            onClick={() => setLayoutMode(layoutMode === "vertical" ? "horizontal" : "vertical")}
+            title={`布局: ${LAYOUT_LABELS[layoutMode]} → 点击切换`}
+            onClick={() => {
+              const cycle: LayoutMode[] = ["vertical", "horizontal", "hidden", "fullscreen"];
+              const idx = cycle.indexOf(layoutMode as LayoutMode);
+              setLayoutMode(cycle[(idx + 1) % cycle.length]);
+            }}
           >
-            {layoutMode === "vertical" ? (
-              <Rows2 className="h-3.5 w-3.5" />
-            ) : (
-              <Columns2 className="h-3.5 w-3.5" />
-            )}
+            <LayoutCycleIcon mode={layoutMode as LayoutMode} />
           </Button>
         </div>
       </div>

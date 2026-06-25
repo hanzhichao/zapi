@@ -1,0 +1,48 @@
+{
+  "id": "hmac-auth",
+  "name": "HMAC Auth",
+  "version": "1.0.0",
+  "description": "Signs each request with an HMAC-SHA256 signature header. Compatible with many custom auth schemes.",
+  "author": "zapi",
+  "hooks": ["beforeRequest"],
+  "config": [
+    {
+      "key": "secretKey",
+      "label": "Secret Key",
+      "type": "secret",
+      "required": true,
+      "description": "The HMAC secret key used for signing.",
+      "placeholder": "your-secret-key"
+    },
+    {
+      "key": "headerName",
+      "label": "Signature Header",
+      "type": "string",
+      "default": "X-Signature",
+      "description": "Name of the request header that will carry the HMAC signature.",
+      "placeholder": "X-Signature"
+    },
+    {
+      "key": "algorithm",
+      "label": "Algorithm",
+      "type": "select",
+      "options": ["HMAC-SHA256 (hex)", "HMAC-SHA256 (base64)"],
+      "default": "HMAC-SHA256 (hex)"
+    },
+    {
+      "key": "signContent",
+      "label": "Sign Content",
+      "type": "select",
+      "options": ["method+url", "url-only", "body", "method+url+body"],
+      "default": "method+url",
+      "description": "What to include in the signed message."
+    },
+    {
+      "key": "timestampHeader",
+      "label": "Include Timestamp Header",
+      "type": "boolean",
+      "default": "true",
+      "description": "Also send X-Timestamp with the Unix timestamp (seconds)."
+    }
+  ]
+}

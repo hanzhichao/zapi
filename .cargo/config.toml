@@ -1,0 +1,3 @@
+# Use rustup's stable toolchain (1.94+) instead of Homebrew Rust (1.87)
+[build]
+rustc = "/Users/superhin/.rustup/toolchains/stable-x86_64-apple-darwin/bin/rustc"
